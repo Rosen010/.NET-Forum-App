@@ -20,8 +20,22 @@ dist-ssr
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
 *.sw?
 client/.env.production
 
+# .NET
+bin/
+obj/
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+launchSettings.json
+
+# Context folder (requirements docs)
 Context
