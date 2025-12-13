@@ -1,0 +1,85 @@
+.categoriesCard {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    border: 1px solid #374151;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.categoriesTitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: white;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #374151;
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.categoriesList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.categoryItem {
+    /* Container for each list item */
+}
+
+.categoryLink {
+    display: block;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    font-weight: 500;
+}
+
+.categoryLink::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #3b82f6 0%, #8b5cf6 100%);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.categoryLink:hover::before,
+.categoryLinkActive::before {
+    transform: scaleY(1);
+}
+
+.categoryLinkInactive {
+    color: #d1d5db;
+    background-color: transparent;
+}
+
+.categoryLinkInactive:hover {
+    background-color: #374151;
+    color: white;
+    transform: translateX(4px);
+}
+
+.categoryLinkActive {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+}
+
+.emptyState {
+    color: #6b7280;
+    font-size: 0.875rem;
+    padding: 0.75rem;
+    text-align: center;
+    font-style: italic;
+}

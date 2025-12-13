@@ -1,0 +1,41 @@
+.footer {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    border-top: 2px solid #374151;
+    margin-top: auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        #60a5fa 50%, 
+        transparent 100%);
+}
+
+.footerContainer {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.footerContent {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.875rem;
+}
+
+.footerText {
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+.footer:hover .footerText {
+    color: #d1d5db;
+}
