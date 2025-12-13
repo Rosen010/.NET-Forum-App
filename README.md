@@ -1,119 +1,174 @@
-# React Forum Application
+# Forum Application
 
-A modern forum application built with React 19, featuring user authentication, post management, and a comments system with a sleek dark-themed UI.
+A modern forum application with a React frontend and .NET backend, featuring user authentication, post management, and a comments system.
 
 ![React](https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react)
-![React Router](https://img.shields.io/badge/React_Router-7.9.6-CA4245?logo=react-router)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.18-38B2AC?logo=tailwind-css)
-![Vite](https://img.shields.io/badge/Vite-7.1.7-646CFF?logo=vite)
+![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-4169E1?logo=postgresql)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?logo=tailwind-css)
 
-## 📖 About
+## About
 
-This forum application allows users to create accounts, share posts organized by categories, and engage in discussions through comments. Built as a learning project to demonstrate modern React patterns and best practices.
+This forum application allows users to create accounts, share posts organized by categories, and engage in discussions through comments.
 
-## ✨ What You Can Do
+## Features
 
-- **Create an account** and log in securely
-- **Write posts** with custom categories and content
-- **Edit and delete** your own posts
-- **Comment** on posts and join discussions
-- **Browse posts** by category
-- **View profiles** showing user post history
-- **Navigate easily** with pagination (5 posts per page)
+- **User Authentication** - Register, login, logout with JWT tokens
+- **Posts** - Create, edit, delete posts with categories
+- **Comments** - Add and delete comments on posts
+- **Categories** - Filter posts by category
+- **User Profiles** - View user post history
+- **Pagination** - Browse posts 5 at a time
 
-## 🛠 Tech Stack
+## Tech Stack
 
-**Frontend:**
-- React 19.1.1
-- React Router v7
+### Frontend
+- React 19 with React Router v7
 - Tailwind CSS + CSS Modules
 - Vite
+- Context API + useReducer
 
-**State Management:**
-- Context API
-- useReducer for complex state
+### Backend
+- ASP.NET Core 9 Web API
+- Entity Framework Core (Code-First)
+- PostgreSQL
+- JWT Authentication
+- FluentValidation
+- AutoMapper
 
-**Backend:**
-- SoftUni Practice Server (REST API)
+## Prerequisites
 
-**Testing:**
-- Vitest
-- React Testing Library
-
-## 🚀 Getting Started
-
-### Prerequisites
 - Node.js (v18+)
-- npm
+- .NET 9 SDK
+- PostgreSQL 15+
 
-### Installation
+## Getting Started
 
-1. Clone the repo
-   ```bash
-   git clone <repository-url>
-   cd react-forum-app
-   ```
-
-2. Install dependencies
-   ```bash
-   cd client
-   npm install
-   ```
-
-3. Start the backend server
-   ```bash
-   cd server
-   node server.js
-   ```
-
-4. Start the development server
-   ```bash
-   cd client
-   npm run dev
-   ```
-
-Visit `http://localhost:5173` to see the app!
-
-### Scripts
+### 1. Clone the repository
 
 ```bash
-npm run dev       # Start development server
-npm run build     # Build for production
-npm test          # Run tests
+git clone <repository-url>
+cd .NET-forum-app
 ```
 
-## 📸 Features Highlight
+### 2. Set up the Backend
+
+```bash
+cd ForumApi
+
+# Copy the launch settings template
+cp Properties/launchSettings.example.json Properties/launchSettings.json
+
+# Edit launchSettings.json and replace YOUR_PASSWORD_HERE with your PostgreSQL password
+```
+
+Update the connection string in `Properties/launchSettings.json`:
+```json
+"ConnectionStrings__DefaultConnection": "Host=localhost;Port=5432;Database=forumdb_dev;Username=postgres;Password=YOUR_PASSWORD"
+```
+
+Apply database migrations and run:
+```bash
+dotnet ef database update
+dotnet run
+```
+
+The API will be available at `http://localhost:5000`
+
+### 3. Set up the Frontend
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+The frontend will be available at `http://localhost:5173`
+
+## API Endpoints
 
 ### Authentication
-Register, login, and logout with session persistence
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/users/register` | Register new user |
+| POST | `/users/login` | Login user |
+| GET | `/users/logout` | Logout user |
 
 ### Posts
-Create, read, update, and delete posts with categories
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/data/posts` | Get all posts |
+| GET | `/data/posts?load=author=_ownerId:users` | Get posts with author |
+| GET | `/data/posts/{id}` | Get single post |
+| POST | `/data/posts` | Create post |
+| PATCH | `/data/posts/{id}` | Update post |
+| DELETE | `/data/posts/{id}` | Delete post |
 
 ### Comments
-Add and delete comments on posts
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/jsonstore/comments?where=postId="{id}"` | Get comments for post |
+| POST | `/jsonstore/comments` | Create comment |
+| DELETE | `/jsonstore/comments/{id}` | Delete comment |
 
-### Categories
-Filter posts by category with dynamic sidebar
+## Project Structure
 
-### Pagination
-Navigate through posts 5 at a time
+```
+.NET-forum-app/
+├── client/                 # React frontend
+│   ├── src/
+│   │   ├── components/
+│   │   ├── contexts/
+│   │   ├── hooks/
+│   │   └── ...
+│   └── package.json
+├── ForumApi/              # .NET backend
+│   ├── Controllers/
+│   ├── Models/
+│   │   ├── Entities/
+│   │   └── DTOs/
+│   ├── Services/
+│   ├── Validators/
+│   ├── Data/
+│   └── Program.cs
+└── ForumApi.sln
+```
 
-### User Profiles
-View any user's profile and their post history
+## Development
 
-## 🎨 Design
+### Backend Scripts
+```bash
+cd ForumApi
+dotnet run              # Start development server
+dotnet build            # Build project
+dotnet ef migrations add <name>  # Create migration
+dotnet ef database update        # Apply migrations
+```
 
-- **Dark theme** with smooth gradients
-- **Responsive** design for all devices
-- **Smooth animations** and hover effects
-- **Form validation** with real-time feedback
-- **Loading states** for better UX
+### Frontend Scripts
+```bash
+cd client
+npm run dev      # Start development server
+npm run build    # Build for production
+npm test         # Run tests
+```
 
-## 📝 License
+## API Documentation
 
-This project is part of a SoftUni React course evaluation.
+Swagger UI is available at `http://localhost:5000/swagger` when running in development mode.
 
-## 👨‍💻 Author
+## Authentication
 
-**Rosen Filipov** - React Student
+The API uses JWT tokens sent via the `X-Authorization` header:
+
+```bash
+curl -H "X-Authorization: <your-token>" http://localhost:5000/data/posts
+```
+
+## License
+
+This project is for educational purposes.
+
+## Author
+
+**Rosen Filipov**
