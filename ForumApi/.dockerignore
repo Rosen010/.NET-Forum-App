@@ -1,0 +1,8 @@
+**/bin
+**/obj
+**/out
+**/.vs
+**/.vscode
+**/node_modules
+client/
+Context/
