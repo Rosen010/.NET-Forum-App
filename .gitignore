@@ -39,3 +39,5 @@ launchSettings.json
 
 # Context folder (requirements docs)
 Context
+.vs
+.claude
