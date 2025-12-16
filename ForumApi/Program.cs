@@ -12,6 +12,12 @@ using ForumApi.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Production configuration from environment variables
+if (builder.Environment.IsProduction())
+{
+    builder.Configuration.AddEnvironmentVariables();
+}
+
 // Database
 builder.Services.AddDbContext<ForumDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -68,11 +74,20 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:5173",
-                "http://localhost:3000",
-                builder.Configuration["Frontend:ProductionUrl"] ?? "http://localhost:5173"
-            )
+        var allowedOrigins = new List<string>
+        {
+            "http://localhost:5173",
+            "http://localhost:3000"
+        };
+
+        // Add CloudFront URL from environment variable
+        var productionUrl = builder.Configuration["FRONTEND_URL"];
+        if (!string.IsNullOrEmpty(productionUrl))
+        {
+            allowedOrigins.Add(productionUrl);
+        }
+
+        policy.WithOrigins(allowedOrigins.ToArray())
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
