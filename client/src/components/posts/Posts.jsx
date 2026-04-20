@@ -82,7 +82,7 @@ export default function Posts() {
                     <p className="text-gray-400 py-2">
                         Showing {paginationData.items.length} of {paginationData.totalItems} posts
                     </p>
-                    <div className="space-y-4 mb-6">
+                    <div className="flex flex-col gap-4 mb-6">
                         {paginationData.items.map(post => (
                             <PostItem key={post._id} post={post} />
                         ))}
