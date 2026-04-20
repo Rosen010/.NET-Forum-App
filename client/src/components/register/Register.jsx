@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import UserContext from "../../contexts/UserContext";
 import useForm from "../../hooks/useForm";
@@ -9,14 +9,22 @@ export default function Register() {
     const navigate = useNavigate();
     const { registerHandler } = useContext(UserContext);
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState('');
+
     const registerSubmitHandler = async (values) => {
         const { email, password, profilePicture } = values;
+
+        setSubmitError('');
+        setIsSubmitting(true);
 
         try {
             await registerHandler(email, password, profilePicture);
             navigate('/');
         } catch (err) {
-            alert(err.message || 'Registration failed. Please try again.');
+            setSubmitError(err?.message || 'Registration failed. Please try again.');
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
@@ -108,11 +116,17 @@ export default function Register() {
                                 placeholder="https://example.com/avatar.jpg"
                             />
                         </FormField>
-
+                    
+                        {submitError && (
+                            <div className="text-red-400 text-sm mb-3">
+                                {submitError}
+                            </div>
+                        )}
                         <button
                             type="submit"
+                            disabled={isSubmitting}
                             className="w-full bg-green-600 hover:bg-green-700 px-4 py-3 rounded-md font-medium transition-colors">
-                            Register
+                            {isSubmitting ? 'Registering...' : 'Register'}
                         </button>
                     </form>
 

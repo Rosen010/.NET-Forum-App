@@ -38,8 +38,19 @@ export default function useRequest(endpoint, initialState) {
         }
 
         if (!response.ok) {
-            console.log(response);
-            throw response.statusText;
+            let errorMessage = response.statusText;
+
+            try {
+                const errorBody = await response.json();
+
+                if (errorBody.message) {
+                    errorMessage = errorBody.message;
+                }
+            } catch {
+                // Ignore JSON parse errors
+            }
+
+            throw new Error(errorMessage);
         }
 
         if (response.status === 204) {
