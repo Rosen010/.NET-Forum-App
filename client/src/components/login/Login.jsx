@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useForm from "../../hooks/useForm";
 import UserContext from "../../contexts/UserContext";
@@ -9,12 +9,20 @@ export default function Login() {
     const navigate = useNavigate();
     const { loginHandler } = useContext(UserContext);
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState('');
+
     const submitHandler = async ({ email, password }) => {
+        setSubmitError('');
+        setIsSubmitting(true);
+
         try {
             await loginHandler(email, password);
             navigate('/');
         } catch (err) {
-            alert(err.message || 'Login failed. Please check your credentials.');
+            setSubmitError(err?.message || 'Login failed. Please check your credentials.');
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
@@ -37,8 +45,8 @@ export default function Login() {
                     <h2 className="text-2xl font-bold text-white mb-6">Welcome Back</h2>
 
                     <form className="space-y-6" action={formAction}>
-                        <FormField 
-                            label="Email" 
+                        <FormField
+                            label="Email"
                             error={getFieldError('email')}
                             required
                         >
@@ -46,15 +54,14 @@ export default function Login() {
                                 type="email"
                                 id="email"
                                 {...register('email')}
-                                className={`w-full px-4 py-2 bg-gray-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                    getFieldError('email') ? 'border-red-500' : 'border-gray-600'
-                                }`}
+                                className={`w-full px-4 py-2 bg-gray-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${getFieldError('email') ? 'border-red-500' : 'border-gray-600'
+                                    }`}
                                 placeholder="your@email.com"
                             />
                         </FormField>
 
-                        <FormField 
-                            label="Password" 
+                        <FormField
+                            label="Password"
                             error={getFieldError('password')}
                             required
                         >
@@ -62,17 +69,22 @@ export default function Login() {
                                 type="password"
                                 id="password"
                                 {...register('password')}
-                                className={`w-full px-4 py-2 bg-gray-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                    getFieldError('password') ? 'border-red-500' : 'border-gray-600'
-                                }`}
+                                className={`w-full px-4 py-2 bg-gray-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${getFieldError('password') ? 'border-red-500' : 'border-gray-600'
+                                    }`}
                                 placeholder="Enter your password"
                             />
                         </FormField>
 
+                        {submitError && (
+                            <div className="text-red-400 text-sm mb-3">
+                                {submitError}
+                            </div>
+                        )}
                         <button
                             type="submit"
+                            disabled={isSubmitting}
                             className="w-full bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-md font-medium transition-colors">
-                            Login
+                            {isSubmitting ? 'Logging in...' : 'Login'}
                         </button>
                     </form>
 
