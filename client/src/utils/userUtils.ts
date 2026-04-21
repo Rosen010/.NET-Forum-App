@@ -1,13 +1,12 @@
 /**
- * Get user initials from email address
- * @param {string} email - User's email address
- * @returns {string} Uppercase initials (max 2 characters)
- * 
+ * Get user initials from email address (max 2 characters, uppercase).
+ *
  * @example
- * getUserInitials('john.doe@example.com') // returns 'JD'
- * getUserInitials('jane@example.com') // returns 'JA'
+ *   getUserInitials('john.doe@example.com') // 'JD'
+ *   getUserInitials('jane@example.com')     // 'JA'
+ *   getUserInitials(undefined)              // '??'
  */
-export function getUserInitials(email) {
+export function getUserInitials(email: string | undefined | null): string {
     if (!email || typeof email !== 'string' || !email.trim()) {
         return '??';
     }
