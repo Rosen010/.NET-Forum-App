@@ -1,5 +1,6 @@
 import { useReducer, useEffect } from "react";
 import useRequest from "./useRequest";
+import type { Comment } from "../types";
 
 // Actions
 const ACTIONS = {
@@ -8,10 +9,23 @@ const ACTIONS = {
     ADD_COMMENT: 'ADD_COMMENT',
     DELETE_COMMENT: 'DELETE_COMMENT',
     ERROR: 'ERROR',
-};
+} as const;
+
+interface CommentsState {
+    comments: Comment[];
+    loading: boolean;
+    error: string | null;
+}
+
+type CommentsAction =
+    | { type: typeof ACTIONS.LOADING }
+    | { type: typeof ACTIONS.SET_COMMENTS; payload: Comment[] }
+    | { type: typeof ACTIONS.ADD_COMMENT; payload: Comment }
+    | { type: typeof ACTIONS.DELETE_COMMENT; payload: string }
+    | { type: typeof ACTIONS.ERROR; payload: string };
 
 // Reducer function
-function commentsReducer(state, action) {
+function commentsReducer(state: CommentsState, action: CommentsAction): CommentsState {
     switch (action.type) {
         case ACTIONS.LOADING:
             return {
@@ -57,19 +71,28 @@ function commentsReducer(state, action) {
 }
 
 // Initial state
-const initialState = {
+const initialState: CommentsState = {
     comments: [],
     loading: true,
     error: null,
 };
 
+export interface UseCommentsResult {
+    comments: Comment[];
+    loading: boolean;
+    error: string | null;
+    addComment: (commentData: unknown) => Promise<Comment>;
+    deleteComment: (commentId: string) => Promise<void>;
+    refetchComments: () => Promise<void>;
+}
+
 // Custom hook
-export default function useComments(postId) {
+export default function useComments(postId: string | undefined): UseCommentsResult {
     const [state, dispatch] = useReducer(commentsReducer, initialState);
     const { request } = useRequest();
 
     // Fetch comments
-    const fetchComments = async () => {
+    const fetchComments = async (): Promise<void> => {
         if (!postId) return;
 
         dispatch({ type: ACTIONS.LOADING });
@@ -83,7 +106,10 @@ export default function useComments(postId) {
                 sortBy: sortBy,
             });
 
-            const data = await request(`/jsonstore/comments?${urlParams.toString()}`, 'GET');
+            const data = await request<Comment[] | Record<string, Comment>>(
+                `/jsonstore/comments?${urlParams.toString()}`,
+                'GET',
+            );
 
             // Convert object to array if needed
             const commentsArray = Array.isArray(data) ? data : Object.values(data);
@@ -91,29 +117,32 @@ export default function useComments(postId) {
             dispatch({ type: ACTIONS.SET_COMMENTS, payload: commentsArray });
         } catch (err) {
             console.error('Failed to fetch comments:', err);
-            dispatch({ type: ACTIONS.ERROR, payload: err.message });
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            dispatch({ type: ACTIONS.ERROR, payload: message });
         }
     };
 
     // Add comment
-    const addComment = async (commentData) => {
+    const addComment = async (commentData: unknown): Promise<Comment> => {
         try {
-            const result = await request('/jsonstore/comments', 'POST', commentData);
+            const result = await request<Comment>('/jsonstore/comments', 'POST', commentData);
             dispatch({ type: ACTIONS.ADD_COMMENT, payload: result });
             return result;
         } catch (err) {
-            dispatch({ type: ACTIONS.ERROR, payload: err.message });
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            dispatch({ type: ACTIONS.ERROR, payload: message });
             throw err;
         }
     };
 
     // Delete comment
-    const deleteComment = async (commentId) => {
+    const deleteComment = async (commentId: string): Promise<void> => {
         try {
             await request(`/jsonstore/comments/${commentId}`, 'DELETE');
             dispatch({ type: ACTIONS.DELETE_COMMENT, payload: commentId });
         } catch (err) {
-            dispatch({ type: ACTIONS.ERROR, payload: err.message });
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            dispatch({ type: ACTIONS.ERROR, payload: message });
             throw err;
         }
     };

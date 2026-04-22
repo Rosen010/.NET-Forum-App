@@ -1,36 +1,63 @@
 import { useContext, useEffect, useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import UserContext from "../contexts/UserContext";
 
 const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3030';
 
-export default function useRequest(endpoint, initialState) {
-    const { user, isAuthenticated, clearSession } = useContext(UserContext);
-    const [data, setData] = useState(initialState);
-    const [loading, setLoading] = useState(!!endpoint);
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-    const request = async (endpoint, method, data, config = {}) => {
-        let options = {};
+export interface RequestConfig {
+    accessToken?: string;
+}
+
+export interface UseRequestResult<T> {
+    request: <R = unknown>(
+        endpoint: string,
+        method?: HttpMethod,
+        data?: unknown,
+        config?: RequestConfig,
+    ) => Promise<R>;
+    data: T;
+    setData: Dispatch<SetStateAction<T>>;
+    loading: boolean;
+}
+
+export default function useRequest<T = unknown>(
+    endpoint?: string,
+    initialState?: T,
+): UseRequestResult<T> {
+    const { user, isAuthenticated, clearSession } = useContext(UserContext);
+    const [data, setData] = useState<T>(initialState as T);
+    const [loading, setLoading] = useState<boolean>(!!endpoint);
+
+    const request = async <R = unknown>(
+        reqEndpoint: string,
+        method?: HttpMethod,
+        reqData?: unknown,
+        config: RequestConfig = {},
+    ): Promise<R> => {
+        const options: RequestInit = {};
 
         if (method) {
             options.method = method;
         }
 
-        if (data) {
+        if (reqData) {
             options.headers = {
                 'content-type': 'application/json',
             };
 
-            options.body = JSON.stringify(data);
+            options.body = JSON.stringify(reqData);
         }
 
         if (config.accessToken || isAuthenticated) {
             options.headers = {
                 ...options.headers,
                 'X-Authorization': config.accessToken || user.accessToken,
-            }
+            };
         }
 
-        const response = await fetch(`${baseUrl}${endpoint}`, options);
+        const response = await fetch(`${baseUrl}${reqEndpoint}`, options);
 
         // Handle authentication errors (expired/invalid token)
         if (response.status === 401 || response.status === 403) {
@@ -54,13 +81,13 @@ export default function useRequest(endpoint, initialState) {
         }
 
         if (response.status === 204) {
-            return {};
+            return {} as R;
         }
 
         const result = await response.json();
 
-        return result;
-    }
+        return result as R;
+    };
 
     useEffect(() => {
         if (!endpoint) {
@@ -68,9 +95,9 @@ export default function useRequest(endpoint, initialState) {
         }
 
         setLoading(true);
-        request(endpoint)
+        request<T>(endpoint)
             .then(result => setData(result))
-            .catch(err => {
+            .catch((err: Error) => {
                 console.error('Request failed:', err);
                 // Don't show alert for authentication errors since we're logging out
                 if (!err.message?.includes('session has expired')) {
@@ -85,5 +112,5 @@ export default function useRequest(endpoint, initialState) {
         data,
         setData,
         loading,
-    }
+    };
 }
