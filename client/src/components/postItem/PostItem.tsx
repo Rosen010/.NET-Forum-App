@@ -1,8 +1,13 @@
 import { Link } from "react-router-dom";
 import { getUserInitials } from "../../utils/userUtils";
+import type { PostWithAuthor } from "../../types";
 import styles from './PostItem.module.css';
 
-export default function PostItem({ post }) {
+interface PostItemProps {
+    post: PostWithAuthor;
+}
+
+export default function PostItem({ post }: PostItemProps) {
     const {
         _id,
         title,

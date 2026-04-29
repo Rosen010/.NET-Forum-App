@@ -1,7 +1,13 @@
 import { useUserContext } from "../../contexts/UserContext";
 import { getUserInitials } from "../../utils/userUtils";
+import type { Comment } from "../../types";
 
-export default function CommentItem({ comment, onDelete }) {
+interface CommentItemProps {
+    comment: Comment;
+    onDelete?: (commentId: string) => void;
+}
+
+export default function CommentItem({ comment, onDelete }: CommentItemProps) {
     const { user, isAuthenticated } = useUserContext();
     const isOwner = isAuthenticated && user?._id === comment._ownerId;
 

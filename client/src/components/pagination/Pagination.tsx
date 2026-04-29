@@ -1,5 +1,15 @@
 import { getPageNumbers, getPaginationInfo } from "../../utils/paginationUtils";
 
+interface PaginationProps {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    startIndex: number;
+    endIndex: number;
+    onPageChange: (page: number) => void;
+    itemName?: string;
+}
+
 export default function Pagination({
     currentPage,
     totalPages,
@@ -7,8 +17,8 @@ export default function Pagination({
     startIndex,
     endIndex,
     onPageChange,
-    itemName = "items"
-}) {
+    itemName = "items",
+}: PaginationProps) {
     if (totalPages <= 1) {
         return null;
     }
