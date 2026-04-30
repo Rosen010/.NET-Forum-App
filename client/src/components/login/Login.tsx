@@ -4,6 +4,7 @@ import useForm from "../../hooks/useForm";
 import UserContext from "../../contexts/UserContext";
 import { validators } from "../../utils/validationUtils";
 import FormField from "../formField/FormField";
+import type { UserCredentials } from "../../types";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -12,7 +13,7 @@ export default function Login() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState('');
 
-    const submitHandler = async ({ email, password }) => {
+    const submitHandler = async ({ email, password }: UserCredentials) => {
         setSubmitError('');
         setIsSubmitting(true);
 
@@ -20,17 +21,18 @@ export default function Login() {
             await loginHandler(email, password);
             navigate('/');
         } catch (err) {
-            setSubmitError(err?.message || 'Login failed. Please check your credentials.');
+            const message = err instanceof Error ? err.message : 'Login failed. Please check your credentials.';
+            setSubmitError(message);
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
 
     const {
         register,
         formAction,
         getFieldError,
-    } = useForm(submitHandler, {
+    } = useForm<UserCredentials>(submitHandler, {
         email: '',
         password: '',
     }, {

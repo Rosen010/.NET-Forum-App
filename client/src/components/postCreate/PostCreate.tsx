@@ -3,25 +3,27 @@ import useRequest from "../../hooks/useRequest";
 import useForm from "../../hooks/useForm";
 import { validators } from "../../utils/validationUtils";
 import FormField from "../formField/FormField";
+import type { PostInput } from "../../types";
 
 export default function PostCreate() {
     const navigate = useNavigate();
     const { request } = useRequest();
 
-    const createPostHandler = async (data) => {
+    const createPostHandler = async (data: PostInput) => {
         try {
             await request('/data/posts', 'POST', data);
             navigate('/');
         } catch (err) {
-            alert('Failed to create post: ' + (err.message || err));
+            const message = err instanceof Error ? err.message : String(err);
+            alert('Failed to create post: ' + message);
         }
-    }
+    };
 
-    const { 
-        register, 
+    const {
+        register,
         formAction,
         getFieldError,
-    } = useForm(createPostHandler, {
+    } = useForm<PostInput>(createPostHandler, {
         category: '',
         title: '',
         content: '',
@@ -41,8 +43,8 @@ export default function PostCreate() {
 
                 <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
                     <form className="space-y-6" action={formAction}>
-                        <FormField 
-                            label="Category" 
+                        <FormField
+                            label="Category"
                             error={getFieldError('category')}
                             required
                         >
@@ -57,8 +59,8 @@ export default function PostCreate() {
                             />
                         </FormField>
 
-                        <FormField 
-                            label="Title" 
+                        <FormField
+                            label="Title"
                             error={getFieldError('title')}
                             required
                         >
@@ -73,15 +75,15 @@ export default function PostCreate() {
                             />
                         </FormField>
 
-                        <FormField 
-                            label="Content" 
+                        <FormField
+                            label="Content"
                             error={getFieldError('content')}
                             required
                         >
                             <textarea
                                 id="content"
                                 {...register('content')}
-                                rows="12"
+                                rows={12}
                                 className={`w-full px-4 py-2 bg-gray-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y ${
                                     getFieldError('content') ? 'border-red-500' : 'border-gray-600'
                                 }`}

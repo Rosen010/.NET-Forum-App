@@ -2,22 +2,27 @@ import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useRequest from "../../hooks/useRequest";
 import useForm from "../../hooks/useForm";
+import type { Post, PostInput } from "../../types";
 
 export default function PostEdit() {
-    const { postId } = useParams();
+    const { postId } = useParams<{ postId: string }>();
     const navigate = useNavigate();
-    const { request, data: post, loading } = useRequest(`/data/posts/${postId}`, null);
+    const { request, data: post, loading } = useRequest<Post | null>(
+        `/data/posts/${postId}`,
+        null,
+    );
 
-    const editPostHandler = async (data) => {
+    const editPostHandler = async (data: PostInput) => {
         try {
             await request(`/data/posts/${postId}`, 'PATCH', data);
             navigate(`/posts/${postId}`);
         } catch (err) {
-            alert('Failed to update post: ' + err);
+            const message = err instanceof Error ? err.message : String(err);
+            alert('Failed to update post: ' + message);
         }
-    }
+    };
 
-    const { register, formAction, setValues } = useForm(editPostHandler, {
+    const { register, formAction, setValues } = useForm<PostInput>(editPostHandler, {
         category: '',
         title: '',
         content: '',
@@ -96,7 +101,7 @@ export default function PostEdit() {
                             <textarea
                                 id="content"
                                 {...register('content')}
-                                rows="12"
+                                rows={12}
                                 className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
                                 placeholder="Write your post content here..."
                             ></textarea>

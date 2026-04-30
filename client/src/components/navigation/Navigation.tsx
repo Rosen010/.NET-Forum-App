@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useUserContext } from "../../contexts/UserContext";
 import { getUserInitials } from "../../utils/userUtils";
+import type { AuthUser } from "../../types";
 import styles from './Navigation.module.css';
 
 function GuestLinks() {
@@ -16,7 +17,11 @@ function GuestLinks() {
     );
 }
 
-function AuthLinks({ user }) {
+interface AuthLinksProps {
+    user: AuthUser | null;
+}
+
+function AuthLinks({ user }: AuthLinksProps) {
     return (
         <>
             <Link to="/profile" className={styles.authLink}>

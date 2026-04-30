@@ -1,13 +1,20 @@
 import { Link } from "react-router-dom";
 import useRequest from "../../hooks/useRequest";
+import type { Post } from "../../types";
 
-export default function UserPosts({ userId }) {
+interface UserPostsProps {
+    userId: string | undefined;
+}
+
+export default function UserPosts({ userId }: UserPostsProps) {
 
     const whereClause = `_ownerId="${userId}"`;
     const sortBy = '_createdOn desc';
-    const { data: userPosts, loading: postsLoading } = useRequest(
-        userId ? `/data/posts?where=${encodeURIComponent(whereClause)}&sortBy=${encodeURIComponent(sortBy)}` : null,
-        []
+    const { data: userPosts, loading: postsLoading } = useRequest<Post[]>(
+        userId
+            ? `/data/posts?where=${encodeURIComponent(whereClause)}&sortBy=${encodeURIComponent(sortBy)}`
+            : undefined,
+        [],
     );
 
     if (postsLoading) {

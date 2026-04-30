@@ -1,12 +1,13 @@
 import { Link, useSearchParams } from "react-router-dom";
 import useRequest from "../../hooks/useRequest";
+import type { Post } from "../../types";
 import styles from './Categories.module.css';
 
 export default function Categories() {
     const [searchParams] = useSearchParams();
     const selectedCategory = searchParams.get('category');
 
-    const { data: posts } = useRequest('/data/posts', []);
+    const { data: posts } = useRequest<Post[]>('/data/posts', []);
 
     const categories = [...new Set(
         posts
@@ -23,8 +24,8 @@ export default function Categories() {
                         <Link
                             to="/"
                             className={`${styles.categoryLink} ${
-                                !selectedCategory 
-                                    ? styles.categoryLinkActive 
+                                !selectedCategory
+                                    ? styles.categoryLinkActive
                                     : styles.categoryLinkInactive
                             }`}
                         >

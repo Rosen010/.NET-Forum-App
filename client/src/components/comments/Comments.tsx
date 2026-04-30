@@ -4,11 +4,12 @@ import CommentItem from "./CommentItem";
 export default function Comments() {
     const { comments, loading, deleteComment } = useCommentsContext();
 
-    const handleDeleteComment = async (commentId) => {
+    const handleDeleteComment = async (commentId: string) => {
         try {
             await deleteComment(commentId);
         } catch (err) {
-            alert('Failed to delete comment: ' + err.message);
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            alert('Failed to delete comment: ' + message);
         }
     };
 

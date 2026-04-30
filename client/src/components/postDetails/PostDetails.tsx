@@ -1,26 +1,27 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useRequest from "../../hooks/useRequest";
-import UserContext from "../../contexts/UserContext";
+import { useUserContext } from "../../contexts/UserContext";
 import { getUserInitials } from "../../utils/userUtils";
 import Comments from "../comments/Comments";
 import CommentForm from "../comments/CommentForm";
 import { CommentsProvider } from "../../contexts/CommentsContext";
+import type { PostWithAuthor } from "../../types";
 
 export default function PostDetails() {
-    const { postId } = useParams();
+    const { postId } = useParams<{ postId: string }>();
     const navigate = useNavigate();
-    const { user, isAuthenticated } = useContext(UserContext);
+    const { user, isAuthenticated } = useUserContext();
     const { request } = useRequest();
-    const [refreshComments, setRefreshComments] = useState(0);
+    const [_refreshComments, _setRefreshComments] = useState(0);
 
     const urlParams = new URLSearchParams({
         load: 'author=_ownerId:users'
     });
 
-    const { data: post, loading } = useRequest(
+    const { data: post, loading } = useRequest<PostWithAuthor | null>(
         `/data/posts/${postId}?${urlParams.toString()}`,
-        null
+        null,
     );
 
     const deleteHandler = async () => {
@@ -31,7 +32,8 @@ export default function PostDetails() {
             await request(`/data/posts/${postId}`, 'DELETE');
             navigate('/');
         } catch (err) {
-            alert('Failed to delete post: ' + err);
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            alert('Failed to delete post: ' + message);
         }
     };
 

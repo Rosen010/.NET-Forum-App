@@ -5,6 +5,13 @@ import useForm from "../../hooks/useForm";
 import { validators } from "../../utils/validationUtils";
 import FormField from "../formField/FormField";
 
+interface RegisterFormValues {
+    email: string;
+    password: string;
+    confirmPassword: string;
+    profilePicture: string;
+}
+
 export default function Register() {
     const navigate = useNavigate();
     const { registerHandler } = useContext(UserContext);
@@ -12,7 +19,7 @@ export default function Register() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState('');
 
-    const registerSubmitHandler = async (values) => {
+    const registerSubmitHandler = async (values: RegisterFormValues) => {
         const { email, password, profilePicture } = values;
 
         setSubmitError('');
@@ -22,17 +29,18 @@ export default function Register() {
             await registerHandler(email, password, profilePicture);
             navigate('/');
         } catch (err) {
-            setSubmitError(err?.message || 'Registration failed. Please try again.');
+            const message = err instanceof Error ? err.message : 'Registration failed. Please try again.';
+            setSubmitError(message);
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
 
     const {
         register,
         formAction,
         getFieldError,
-    } = useForm(registerSubmitHandler, {
+    } = useForm<RegisterFormValues>(registerSubmitHandler, {
         email: '',
         password: '',
         confirmPassword: '',
@@ -54,8 +62,8 @@ export default function Register() {
                     <h2 className="text-2xl font-bold text-white mb-6">Create Account</h2>
 
                     <form className="space-y-6" action={formAction}>
-                        <FormField 
-                            label="Email" 
+                        <FormField
+                            label="Email"
                             error={getFieldError('email')}
                             required
                         >
@@ -70,8 +78,8 @@ export default function Register() {
                             />
                         </FormField>
 
-                        <FormField 
-                            label="Password" 
+                        <FormField
+                            label="Password"
                             error={getFieldError('password')}
                             required
                         >
@@ -86,8 +94,8 @@ export default function Register() {
                             />
                         </FormField>
 
-                        <FormField 
-                            label="Confirm Password" 
+                        <FormField
+                            label="Confirm Password"
                             error={getFieldError('confirmPassword')}
                             required
                         >
@@ -102,8 +110,8 @@ export default function Register() {
                             />
                         </FormField>
 
-                        <FormField 
-                            label="Profile Picture URL (Optional)" 
+                        <FormField
+                            label="Profile Picture URL (Optional)"
                             error={getFieldError('profilePicture')}
                         >
                             <input
@@ -116,7 +124,7 @@ export default function Register() {
                                 placeholder="https://example.com/avatar.jpg"
                             />
                         </FormField>
-                    
+
                         {submitError && (
                             <div className="text-red-400 text-sm mb-3">
                                 {submitError}
