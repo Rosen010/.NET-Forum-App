@@ -50,12 +50,15 @@ export default function useRequest<T = unknown>(
             options.body = JSON.stringify(reqData);
         }
 
-        if (config.accessToken || isAuthenticated) {
+        const token = config.accessToken ?? user?.accessToken;
+
+        if (token) {
             options.headers = {
                 ...options.headers,
-                'X-Authorization': config.accessToken || user.accessToken,
+                'X-Authorization': token,
             };
         }
+
 
         const response = await fetch(`${baseUrl}${reqEndpoint}`, options);
 
